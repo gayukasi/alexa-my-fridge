@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import {
   Category,
   Location,
@@ -22,7 +22,7 @@ export default function AddItemForm({ onAdded }: { onAdded: () => void }) {
     if (!name.trim()) return;
 
     setLoading(true);
-    const { error } = await supabase.from("fridge_items").insert({
+    const { error } = await getSupabase().from("fridge_items").insert({
       name: name.trim(),
       category,
       location,

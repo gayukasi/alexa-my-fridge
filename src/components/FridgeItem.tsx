@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import { FridgeItem as FridgeItemType, LOCATION_LABELS } from "@/lib/types";
 
 function daysAgo(dateStr: string): number {
@@ -54,7 +54,7 @@ export default function FridgeItemRow({
 
   async function handleRemove() {
     setRemoving(true);
-    const { error } = await supabase
+    const { error } = await getSupabase()
       .from("fridge_items")
       .delete()
       .eq("id", item.id);

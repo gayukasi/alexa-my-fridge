@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import { FridgeItem, Category, CATEGORIES } from "@/lib/types";
 import AddItemForm from "./AddItemForm";
 import CategoryGroup from "./CategoryGroup";
@@ -11,7 +11,7 @@ export default function FridgeInventory() {
   const [loading, setLoading] = useState(true);
 
   const fetchItems = useCallback(async () => {
-    const { data, error } = await supabase
+    const { data, error } = await getSupabase()
       .from("fridge_items")
       .select("*")
       .order("added_at", { ascending: false });
