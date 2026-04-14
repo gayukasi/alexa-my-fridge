@@ -11,17 +11,22 @@ export default function FridgeInventory() {
   const [loading, setLoading] = useState(true);
 
   const fetchItems = useCallback(async () => {
-    const { data, error } = await getSupabase()
-      .from("fridge_items")
-      .select("*")
-      .order("added_at", { ascending: false });
+    try {
+      const { data, error } = await getSupabase()
+        .from("fridge_items")
+        .select("*")
+        .order("added_at", { ascending: false });
 
-    if (error) {
-      console.error("Error fetching items:", error.message, error.details, error.hint);
-    } else {
-      setItems(data as FridgeItem[]);
+      if (error) {
+        console.error("Error fetching items:", error.message, error.details, error.hint);
+      } else {
+        setItems(data as FridgeItem[]);
+      }
+    } catch (err) {
+      console.error("Failed to connect to Supabase:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {

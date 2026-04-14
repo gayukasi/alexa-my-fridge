@@ -22,23 +22,29 @@ export default function AddItemForm({ onAdded }: { onAdded: () => void }) {
     if (!name.trim()) return;
 
     setLoading(true);
-    const { error } = await getSupabase().from("fridge_items").insert({
-      name: name.trim(),
-      category,
-      location,
-      added_at: new Date().toISOString(),
-      expires_at: expiresAt || null,
-    });
+    try {
+      const { error } = await getSupabase().from("fridge_items").insert({
+        name: name.trim(),
+        category,
+        location,
+        added_at: new Date().toISOString(),
+        expires_at: expiresAt || null,
+      });
 
-    if (error) {
-      console.error("Error adding item:", error.message, error.details, error.hint);
-      alert(`Failed to add item: ${error.message}`);
-    } else {
-      setName("");
-      setExpiresAt("");
-      onAdded();
+      if (error) {
+        console.error("Error adding item:", error.message, error.details, error.hint);
+        alert(`Failed to add item: ${error.message}`);
+      } else {
+        setName("");
+        setExpiresAt("");
+        onAdded();
+      }
+    } catch (err) {
+      console.error("Failed to connect to Supabase:", err);
+      alert("Failed to connect to database. Check console for details.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   const inputClass =
