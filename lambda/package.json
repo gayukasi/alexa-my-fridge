@@ -1,0 +1,14 @@
+{
+  "name": "alexa-sort-my-fridge-lambda",
+  "version": "1.0.0",
+  "description": "Alexa Custom Skill Lambda for fridge inventory management",
+  "main": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "zip": "zip -r lambda.zip index.mjs node_modules package.json"
+  },
+  "dependencies": {
+    "ask-sdk-core": "^2.14.0",
+    "ask-sdk-model": "^1.86.0"
+  }
+}
