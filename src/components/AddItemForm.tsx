@@ -10,7 +10,7 @@ import {
   LOCATION_LABELS,
 } from "@/lib/types";
 
-export default function AddItemForm({ onAdded }: { onAdded: () => void }) {
+export default function AddItemForm() {
   const [name, setName] = useState("");
   const [category, setCategory] = useState<Category>("produce");
   const [location, setLocation] = useState<Location>("fridge");
@@ -37,7 +37,6 @@ export default function AddItemForm({ onAdded }: { onAdded: () => void }) {
       } else {
         setName("");
         setExpiresAt("");
-        onAdded();
       }
     } catch (err) {
       console.error("Failed to connect to Supabase:", err);

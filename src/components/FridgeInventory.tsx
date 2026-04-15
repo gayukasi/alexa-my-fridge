@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
 import { FridgeItem, Category, CATEGORIES } from "@/lib/types";
 import AddItemForm from "./AddItemForm";
@@ -10,28 +10,57 @@ export default function FridgeInventory() {
   const [items, setItems] = useState<FridgeItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchItems = useCallback(async () => {
-    try {
-      const { data, error } = await getSupabase()
-        .from("fridge_items")
-        .select("*")
-        .order("added_at", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching items:", error.message, error.details, error.hint);
-      } else {
-        setItems(data as FridgeItem[]);
-      }
-    } catch (err) {
-      console.error("Failed to connect to Supabase:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
+    const supabase = getSupabase();
+
+    // Initial fetch
+    supabase
+      .from("fridge_items")
+      .select("*")
+      .order("added_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Error fetching items:", error.message);
+        } else {
+          setItems(data as FridgeItem[]);
+        }
+        setLoading(false);
+      });
+
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel("fridge_items_changes")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "fridge_items" },
+        (payload) => {
+          setItems((prev) => [payload.new as FridgeItem, ...prev]);
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "fridge_items" },
+        (payload) => {
+          setItems((prev) => prev.filter((item) => item.id !== payload.old.id));
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "fridge_items" },
+        (payload) => {
+          setItems((prev) =>
+            prev.map((item) =>
+              item.id === payload.new.id ? (payload.new as FridgeItem) : item
+            )
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const grouped = CATEGORIES.reduce(
     (acc, cat) => {
@@ -87,7 +116,6 @@ export default function FridgeInventory() {
                 key={cat}
                 category={cat}
                 items={grouped[cat]}
-                onChanged={fetchItems}
               />
             ))}
           </div>
@@ -104,7 +132,7 @@ export default function FridgeInventory() {
           <p className="mb-5 text-xs text-orange-600/70">
             What did you bring home?
           </p>
-          <AddItemForm onAdded={fetchItems} />
+          <AddItemForm />
         </div>
       </div>
     </div>

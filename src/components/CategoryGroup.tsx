@@ -19,11 +19,9 @@ const CATEGORY_COLORS: Record<Category, string> = {
 export default function CategoryGroup({
   category,
   items,
-  onChanged,
 }: {
   category: Category;
   items: FridgeItem[];
-  onChanged: () => void;
 }) {
   if (items.length === 0) return null;
 
@@ -42,7 +40,7 @@ export default function CategoryGroup({
       </h2>
       <div className="flex flex-col gap-2">
         {items.map((item) => (
-          <FridgeItemRow key={item.id} item={item} onRemoved={onChanged} />
+          <FridgeItemRow key={item.id} item={item} />
         ))}
       </div>
     </section>

@@ -44,10 +44,8 @@ const LOCATION_ICONS: Record<string, string> = {
 
 export default function FridgeItemRow({
   item,
-  onRemoved,
 }: {
   item: FridgeItemType;
-  onRemoved: () => void;
 }) {
   const [removing, setRemoving] = useState(false);
   const days = daysAgo(item.added_at);
@@ -62,9 +60,8 @@ export default function FridgeItemRow({
     if (error) {
       console.error("Error removing item:", error);
       setRemoving(false);
-    } else {
-      onRemoved();
     }
+    // No need to call onRemoved — realtime handles the state update
   }
 
   return (
