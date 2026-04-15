@@ -5,7 +5,7 @@ const { SUPABASE_URL, SUPABASE_SERVICE_KEY } = process.env;
 // ── Supabase helpers ───────────────────────────────────────────────
 
 async function supabaseInsert(item, category, location) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/inventory`, {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/fridge_items`, {
     method: "POST",
     headers: {
       apikey: SUPABASE_SERVICE_KEY,
@@ -29,7 +29,7 @@ async function supabaseInsert(item, category, location) {
 
 async function supabaseDelete(item) {
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/inventory?name=eq.${encodeURIComponent(item)}`,
+    `${SUPABASE_URL}/rest/v1/fridge_items?name=eq.${encodeURIComponent(item)}`,
     {
       method: "DELETE",
       headers: {
@@ -57,7 +57,7 @@ const LaunchRequestHandler = {
   handle(handlerInput) {
     return handlerInput.responseBuilder
       .speak(
-        "Welcome to Sort My Fridge. You can say add milk to dairy, or remove eggs."
+        "Welcome to your fridge. What would you like to add or remove?"
       )
       .reprompt("What would you like to add or remove?")
       .getResponse();
@@ -90,18 +90,21 @@ const AddInventoryIntentHandler = {
       if (action === "remove") {
         await supabaseDelete(item);
         return handlerInput.responseBuilder
-          .speak(`Got it, ${item} removed from your inventory.`)
+          .speak(`Got it, ${item} removed. Anything else?`)
+          .reprompt("What else would you like to add or remove?")
           .getResponse();
       }
 
       await supabaseInsert(item, category, location);
       return handlerInput.responseBuilder
-        .speak(`Got it, ${item} added to ${category}.`)
+        .speak(`Got it, ${item} added to ${category}. Anything else?`)
+        .reprompt("What else would you like to add or remove?")
         .getResponse();
     } catch (err) {
       console.error("Supabase error:", err);
       return handlerInput.responseBuilder
-        .speak(`Sorry, I had trouble updating your inventory. Please try again.`)
+        .speak(`Sorry, I had trouble updating your inventory. Try again?`)
+        .reprompt("What would you like to add or remove?")
         .getResponse();
     }
   },
