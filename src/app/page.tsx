@@ -1,20 +1,30 @@
 export const dynamic = "force-dynamic";
 
 import FridgeInventory from "@/components/FridgeInventory";
+
 export default function Home() {
   return (
     <div className="min-h-screen">
-      <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <header className="mb-10 text-center">
-          <div className="mb-3 text-5xl">🧊</div>
-          <h1 className="text-3xl font-bold tracking-tight text-sage">
-            Sort My Fridge
-          </h1>
-          <p className="mt-2 text-sm text-zinc-500">
-            Keep track of what&apos;s fresh, what&apos;s expiring, and what needs to go
-          </p>
-        </header>
+      {/* Hero / Nav bar */}
+      <nav className="border-b border-zinc-100 bg-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-light text-lg">
+              🧊
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-bark">Sort My Fridge</h1>
+              <p className="text-xs text-zinc-400">Fresh. Tracked. Sorted.</p>
+            </div>
+          </div>
+          <div className="hidden sm:flex items-center gap-6 text-sm text-zinc-500">
+            <span className="cursor-default font-medium text-gold">Inventory</span>
+            <span className="cursor-default">Expiring</span>
+          </div>
+        </div>
+      </nav>
 
+      <main className="mx-auto w-full max-w-6xl px-6 py-8">
         <FridgeInventory />
       </main>
     </div>

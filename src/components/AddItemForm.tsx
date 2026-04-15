@@ -47,60 +47,45 @@ export default function AddItemForm() {
   }
 
   const inputClass =
-    "w-full rounded-xl border border-orange-200/80 bg-white/80 px-3 py-2.5 text-sm text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-300 transition-colors";
+    "w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/50 transition-all";
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div>
-        <label className="mb-1.5 block text-xs font-semibold text-orange-700/70">
-          Item name
-        </label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g. Greek yogurt"
-          className={inputClass}
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Item name"
+        className={inputClass}
+      />
+
+      <select
+        value={category}
+        onChange={(e) => setCategory(e.target.value as Category)}
+        className={inputClass}
+      >
+        {CATEGORIES.map((c) => (
+          <option key={c} value={c}>
+            {CATEGORY_LABELS[c]}
+          </option>
+        ))}
+      </select>
+
+      <select
+        value={location}
+        onChange={(e) => setLocation(e.target.value as Location)}
+        className={inputClass}
+      >
+        {(["fridge", "freezer", "pantry"] as Location[]).map((l) => (
+          <option key={l} value={l}>
+            {LOCATION_LABELS[l]}
+          </option>
+        ))}
+      </select>
 
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-orange-700/70">
-          Category
-        </label>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value as Category)}
-          className={inputClass}
-        >
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>
-              {CATEGORY_LABELS[c]}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label className="mb-1.5 block text-xs font-semibold text-orange-700/70">
-          Location
-        </label>
-        <select
-          value={location}
-          onChange={(e) => setLocation(e.target.value as Location)}
-          className={inputClass}
-        >
-          {(["fridge", "freezer", "pantry"] as Location[]).map((l) => (
-            <option key={l} value={l}>
-              {LOCATION_LABELS[l]}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label className="mb-1.5 block text-xs font-semibold text-orange-700/70">
-          Expires (optional)
+        <label className="mb-1.5 block text-xs text-zinc-400">
+          Expiry date (optional)
         </label>
         <input
           type="date"
@@ -113,7 +98,7 @@ export default function AddItemForm() {
       <button
         type="submit"
         disabled={loading || !name.trim()}
-        className="mt-1 w-full rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-orange-600 hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-1 w-full rounded-xl bg-gold px-5 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-gold-dark hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? "Adding..." : "Add to Fridge"}
       </button>
