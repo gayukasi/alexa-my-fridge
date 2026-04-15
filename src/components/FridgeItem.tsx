@@ -10,9 +10,9 @@ function daysAgo(dateStr: string): number {
   return Math.floor((now.getTime() - added.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-function ageColor(days: number): string {
-  if (days >= 7) return "text-red-500";
-  if (days >= 5) return "text-amber-500";
+function ageClass(days: number): string {
+  if (days >= 7) return "text-red-600 font-semibold";
+  if (days >= 5) return "text-amber-600 font-semibold";
   return "text-zinc-400";
 }
 
@@ -23,11 +23,17 @@ function daysUntil(dateStr: string): number {
   return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-function expiryBadge(days: number): { text: string; cls: string } {
-  if (days < 0) return { text: `Expired`, cls: "bg-red-50 text-red-500" };
-  if (days === 0) return { text: "Today", cls: "bg-amber-50 text-amber-600" };
-  if (days <= 2) return { text: `${days}d left`, cls: "bg-amber-50 text-amber-600" };
-  return { text: `${days}d left`, cls: "bg-zinc-50 text-zinc-400" };
+function expiryClass(days: number): string {
+  if (days < 0) return "bg-red-50 text-red-600 border-red-200";
+  if (days <= 2) return "bg-amber-50 text-amber-600 border-amber-200";
+  return "bg-zinc-50 text-zinc-500 border-zinc-200";
+}
+
+function expiryLabel(days: number): string {
+  if (days < 0) return `Expired ${Math.abs(days)}d ago`;
+  if (days === 0) return "Expires today";
+  if (days === 1) return "Expires tomorrow";
+  return `Exp. in ${days}d`;
 }
 
 const LOCATION_ICONS: Record<string, string> = {
@@ -36,7 +42,11 @@ const LOCATION_ICONS: Record<string, string> = {
   pantry: "🏠",
 };
 
-export default function FridgeItemRow({ item }: { item: FridgeItemType }) {
+export default function FridgeItemRow({
+  item,
+}: {
+  item: FridgeItemType;
+}) {
   const [removing, setRemoving] = useState(false);
   const days = daysAgo(item.added_at);
 
@@ -51,49 +61,40 @@ export default function FridgeItemRow({ item }: { item: FridgeItemType }) {
       console.error("Error removing item:", error);
       setRemoving(false);
     }
+    // No need to call onRemoved — realtime handles the state update
   }
 
   return (
-    <div className="group relative flex items-start gap-3.5 rounded-2xl border border-zinc-100 bg-white p-4 transition-all hover:border-zinc-200 hover:shadow-sm">
-      {/* Location icon */}
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sand text-base">
-        {LOCATION_ICONS[item.location]}
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <p className="text-sm font-semibold text-bark truncate">{item.name}</p>
-          <button
-            onClick={handleRemove}
-            disabled={removing}
-            className="shrink-0 rounded-lg p-1 text-zinc-300 opacity-0 transition-all group-hover:opacity-100 hover:bg-red-50 hover:text-red-400 disabled:opacity-50"
-            title="Remove"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-          <span className="rounded-md bg-sand px-2 py-0.5 text-xs text-zinc-500">
-            {LOCATION_LABELS[item.location]}
+    <div className="group flex items-center justify-between rounded-xl bg-cream/60 px-4 py-3 transition-colors hover:bg-cream-dark/60">
+      <div className="flex flex-col gap-1 min-w-0">
+        <span className="text-sm font-medium text-zinc-800 truncate">
+          {item.name}
+        </span>
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-zinc-500 border border-zinc-100">
+            {LOCATION_ICONS[item.location]} {LOCATION_LABELS[item.location]}
           </span>
-          <span className={`text-xs ${ageColor(days)}`}>
-            {days === 0 ? "Today" : `${days}d ago`}
+          <span className={ageClass(days)}>
+            {days === 0 ? "Added today" : days === 1 ? "1 day ago" : `${days} days ago`}
           </span>
           {item.expires_at && (() => {
             const d = daysUntil(item.expires_at);
-            const badge = expiryBadge(d);
             return (
-              <span className={`rounded-md px-2 py-0.5 text-xs font-medium ${badge.cls}`}>
-                {badge.text}
+              <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${expiryClass(d)}`}>
+                {expiryLabel(d)}
               </span>
             );
           })()}
         </div>
       </div>
+      <button
+        onClick={handleRemove}
+        disabled={removing}
+        className="ml-3 shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium text-zinc-400 transition-all hover:bg-red-50 hover:text-red-600 hover:shadow-sm active:scale-95 disabled:opacity-50"
+        title="Remove item"
+      >
+        {removing ? "..." : "Remove"}
+      </button>
     </div>
   );
 }

@@ -3,15 +3,15 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --color-sand: #f8f4ee;
-  --color-sand-dark: #f0e8d8;
-  --color-gold: #c8913a;
-  --color-gold-light: #f5e6cc;
-  --color-gold-dark: #a67628;
-  --color-bark: #3d2e1e;
-  --color-bark-light: #6b5744;
+  --color-cream: #fef9f0;
+  --color-cream-dark: #fdf3e1;
+  --color-sage: #4a7c59;
+  --color-sage-light: #e8f0ea;
+  --color-sage-dark: #3a6347;
+  --color-peach: #f5c6a0;
+  --color-peach-light: #fef0e4;
 }
 
 body {
-  background: #ffffff;
+  background: var(--color-cream);
 }
